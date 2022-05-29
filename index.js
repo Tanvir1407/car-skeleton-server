@@ -40,7 +40,12 @@ async function run() {
         const result = await ordersCollection.insertOne(order);
         res.send({result})
       })
-
+      // add parts
+      app.post('/add', async (req, res) => {
+        const product = req.body;
+        const result = await partsCollection.insertOne(product)
+        res.send(result);
+      })
       // get my order by email
       app.get('/order', async (req, res) => {
         const email = req.query.email;
@@ -59,6 +64,13 @@ async function run() {
         const id = req.params.id;
         const query = { _id: ObjectId(id) }
         const result = await ordersCollection.deleteOne(query);
+        res.send(result);
+      });
+      // delete parts item
+      app.delete('/tools/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: ObjectId(id) }
+        const result = await partsCollection.deleteOne(query);
         res.send(result);
       })
 
