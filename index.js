@@ -20,6 +20,7 @@ async function run() {
         await client.connect();
         const partsCollection = client.db("carSkeleton").collection("parts");
         const ordersCollection = client.db("carSkeleton").collection("orders");
+        const userCollection = client.db("carSkeleton").collection("profile");
     
         app.get('/parts', async( req,res) => {
             const parts = await partsCollection.find().toArray();
@@ -47,6 +48,50 @@ async function run() {
         const result = await ordersCollection.find(query).toArray();
         res.send(result);
 
+      })
+      //delete order 
+      app.delete('/order/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: ObjectId(id) }
+        const result = await ordersCollection.deleteOne(query);
+        res.send(result);
+      })
+
+      // update profile 
+      app.post('/update', async (req, res) => {
+        const profile = req.body;
+        if (req.body.email) {
+          const result = await userCollection.insertOne(profile);
+          console.log(result);
+          res.send(result);
+        }
+        
+      })
+      //profile update
+      app.put('/update/:id', async (req, res) => {
+        const id = req.params.id;
+        const profile = req.body;
+        const filter = { _id: ObjectId(id) };
+        const options = { upsert: true };
+        const updateDoc = {
+          $set: {
+            name: profile.name,
+            email: profile.email,
+            phone: profile.phone,
+            address: profile.address,
+            education: profile.education,
+            linkedin: profile.linkedin,
+          },
+        };
+        const result = await userCollection.updateOne(filter, updateDoc, options);
+        res.send(result);
+      })
+      //profile Id
+      app.get('/update', async (req, res) => {
+        const email = req.query.email;
+        const query = { email: email }
+        const result = await userCollection.find(query).toArray();
+        res.send(result);
       })
 
     }
