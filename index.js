@@ -19,6 +19,7 @@ async function run() {
     try {
         await client.connect();
         const partsCollection = client.db("carSkeleton").collection("parts");
+        const ordersCollection = client.db("carSkeleton").collection("orders");
     
         app.get('/parts', async( req,res) => {
             const parts = await partsCollection.find().toArray();
@@ -32,6 +33,21 @@ async function run() {
             const result = await partsCollection.findOne(query);
             res.send(result);
         })
+      //get order data from purchase page
+      app.post('/order', async(req, res) => {
+        const order = req.body;
+        const result = await ordersCollection.insertOne(order);
+        res.send({result})
+      })
+
+      // get order by email
+      app.get('/order', async (req, res) => {
+        const email = req.query.email;
+        const query = { email: email };
+        const result = await ordersCollection.find(query).toArray();
+        res.send(result);
+
+      })
 
     }
     finally {
