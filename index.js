@@ -38,7 +38,7 @@ async function run() {
       app.post('/order', async(req, res) => {
         const order = req.body;
         const result = await ordersCollection.insertOne(order);
-        res.send({result})
+        res.send(result)
       })
       // add parts
       app.post('/add', async (req, res) => {
@@ -119,6 +119,13 @@ async function run() {
         const query = { email: email }
         const result = await userCollection.find(query).toArray();
         res.send(result);
+      });
+
+      // all users 
+      app.get('/users', async (req, res) => {
+        const query = {} 
+        const users = await userCollection.find(query).toArray();
+        res.send({users})
       })
 
     }
